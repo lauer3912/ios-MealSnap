@@ -1,0 +1,59 @@
+name: MealSnap
+options:
+  bundleIdPrefix: com.ggsheng
+  deploymentTarget:
+    iOS: "15.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: "9L6N2ZF26B"
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    CODE_SIGNING_ALLOWED: YES
+
+packages:
+  SnapKit:
+    url: https://github.com/SnapKit/SnapKit
+    from: "5.6.0"
+
+targets:
+  MealSnap:
+    type: application
+    platform: iOS
+    sources:
+      - path: MealSnap/Sources
+      - path: MealSnap/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.MealSnap
+        INFOPLIST_FILE: MealSnap/Sources/App/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_ENTITLEMENTS: MealSnap/Sources/App/MealSnap.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+      configs:
+        Debug:
+          CODE_SIGNING_ALLOWED: NO
+        Release:
+          CODE_SIGNING_ALLOWED: YES
+    dependencies:
+      - package: SnapKit
+    entitlements:
+      path: MealSnap/Sources/App/MealSnap.entitlements
+      properties: {}
+
+schemes:
+  MealSnap:
+    build:
+      targets:
+        MealSnap: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release
