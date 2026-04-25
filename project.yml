@@ -47,20 +47,19 @@ targets:
       properties: {}
 
   MealSnapUITests:
-    type: application
+    type: bundle.ui-testing
     platform: iOS
     sources:
       - path: MealSnapUITests
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.MealSnapUITests
         INFOPLIST_FILE: MealSnapUITests/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.MealSnapUITests
+        PRODUCT_NAME: MealSnapUITests
         GENERATE_INFOPLIST_FILE: NO
-        CODE_SIGNING_ALLOWED: NO
-        TEST_TARGET_NAME: MealSnap
-      configs:
-        Debug:
-          CODE_SIGNING_ALLOWED: NO
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: ""
+        DEVELOPMENT_TEAM: "9L6N2ZF26B"
     dependencies:
       - target: MealSnap
 
@@ -69,6 +68,7 @@ schemes:
     build:
       targets:
         MealSnap: all
+        MealSnapUITests: test
     run:
       config: Debug
     test:
@@ -81,10 +81,12 @@ schemes:
   MealSnapUITests:
     build:
       targets:
-        MealSnapUITests: all
+        MealSnapUITests: test
     run:
       config: Debug
     test:
       config: Debug
+      targets:
+        - MealSnapUITests
     archive:
       config: Release
