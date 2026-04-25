@@ -10,7 +10,7 @@ final class MealSnapiPadScreenshotTests: XCTestCase {
         app.launch()
     }
 
-    override func tearDown() throws {
+    override func tearDown() {
         app = nil
     }
 
