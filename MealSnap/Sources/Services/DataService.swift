@@ -61,7 +61,7 @@ final class DataService {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        if let index = dailyNutrition.firstIndex(where: { calendar.isDate($0.date, inSameDayAs: today) }) 
+        if let index = dailyNutrition.firstIndex(where: { calendar.isDate($0.date, inSameDayAs: today) }) {
             dailyNutrition[index].meals.append(food)
         } else {
             var newDay = DailyNutrition.today
@@ -75,7 +75,7 @@ final class DataService {
     func removeFood(at index: Int, from day: Date) {
         let calendar = Calendar.current
 
-        if let dayIndex = dailyNutrition.firstIndex(where: { calendar.isDate($0.date, inSameDayAs: day) }) 
+        if let dayIndex = dailyNutrition.firstIndex(where: { calendar.isDate($0.date, inSameDayAs: day) }) {
             guard index < dailyNutrition[dayIndex].meals.count else { return }
             dailyNutrition[dayIndex].meals.remove(at: index)
             saveData()
@@ -86,7 +86,7 @@ final class DataService {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        if let todayData = dailyNutrition.first(where: { calendar.isDate($0.date, inSameDayAs: today) }) 
+        if let todayData = dailyNutrition.first(where: { calendar.isDate($0.date, inSameDayAs: today) }) {
             return todayData
         }
 
