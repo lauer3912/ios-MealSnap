@@ -46,11 +46,42 @@ targets:
       path: MealSnap/Sources/App/MealSnap.entitlements
       properties: {}
 
+  MealSnapUITests:
+    type: application
+    platform: iOS
+    sources:
+      - path: MealSnapUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.MealSnapUITests
+        INFOPLIST_FILE: MealSnapUITests/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGNING_ALLOWED: NO
+        TEST_TARGET_NAME: MealSnap
+      configs:
+        Debug:
+          CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: MealSnap
+
 schemes:
   MealSnap:
     build:
       targets:
         MealSnap: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - MealSnapUITests
+    archive:
+      config: Release
+
+  MealSnapUITests:
+    build:
+      targets:
+        MealSnapUITests: all
     run:
       config: Debug
     test:
