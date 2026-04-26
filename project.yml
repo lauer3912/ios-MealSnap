@@ -1,3 +1,7 @@
+# ══════════════════════════════════════════════════════════════
+# MealSnap - AI Nutrition & Meal Tracking App
+# ══════════════════════════════════════════════════════════════
+
 name: MealSnap
 options:
   bundleIdPrefix: com.ggsheng
@@ -6,20 +10,28 @@ options:
   xcodeVersion: "15.0"
   generateEmptyDirectories: true
 
+# ══════════════════════════════════════════════════════════════
+# Global Build Settings
+# ══════════════════════════════════════════════════════════════
+
 settings:
   base:
     SWIFT_VERSION: "5.9"
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
-    DEVELOPMENT_TEAM: "9L6N2ZF26B"
+    DEVELOPMENT_TEAM: 9L6N2ZF26B
     CODE_SIGN_STYLE: Automatic
     ENABLE_USER_SCRIPT_SANDBOXING: NO
-    CODE_SIGNING_ALLOWED: YES
+    CODE_SIGNING_ALLOWED: NO
 
 packages:
   SnapKit:
     url: https://github.com/SnapKit/SnapKit
     from: "5.6.0"
+
+# ══════════════════════════════════════════════════════════════
+# Target 1: Main App
+# ══════════════════════════════════════════════════════════════
 
 targets:
   MealSnap:
@@ -35,6 +47,8 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: MealSnap/Sources/App/MealSnap.entitlements
         GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGNING_ALLOWED: NO
+        DEVELOPMENT_TEAM: 9L6N2ZF26B
       configs:
         Debug:
           CODE_SIGNING_ALLOWED: NO
@@ -45,6 +59,32 @@ targets:
     entitlements:
       path: MealSnap/Sources/App/MealSnap.entitlements
       properties: {}
+
+# ══════════════════════════════════════════════════════════════
+# Target 2: Unit Tests
+# ══════════════════════════════════════════════════════════════
+
+  MealSnapTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MealSnapTests
+    settings:
+      base:
+        INFOPLIST_FILE: MealSnapTests/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.MealSnapTests
+        PRODUCT_NAME: MealSnapTests
+        GENERATE_INFOPLIST_FILE: NO
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MealSnap.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MealSnap"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 9L6N2ZF26B
+    dependencies:
+      - target: MealSnap
+
+# ══════════════════════════════════════════════════════════════
+# Target 3: UI Tests
+# ══════════════════════════════════════════════════════════════
 
   MealSnapUITests:
     type: bundle.ui-testing
@@ -57,36 +97,29 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.MealSnapUITests
         PRODUCT_NAME: MealSnapUITests
         GENERATE_INFOPLIST_FILE: NO
-        CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: ""
-        DEVELOPMENT_TEAM: "9L6N2ZF26B"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 9L6N2ZF26B
     dependencies:
       - target: MealSnap
+
+# ══════════════════════════════════════════════════════════════
+# Schemes
+# ══════════════════════════════════════════════════════════════
 
 schemes:
   MealSnap:
     build:
       targets:
         MealSnap: all
-        MealSnapUITests: test
+        MealSnapTests: [test]
+        MealSnapUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - MealSnapUITests
-    archive:
-      config: Release
-
-  MealSnapUITests:
-    build:
-      targets:
-        MealSnapUITests: test
-    run:
-      config: Debug
-    test:
-      config: Debug
-      targets:
+        - MealSnapTests
         - MealSnapUITests
     archive:
       config: Release
