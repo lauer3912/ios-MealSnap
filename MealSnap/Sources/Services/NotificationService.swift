@@ -1,74 +1,32 @@
 import Foundation
 import UserNotifications
 
-final class NotificationService {
+class NotificationService {
     static let shared = NotificationService()
+    private let center = UNUserNotificationCenter.current()
+    private let mealReminderID = "com.ggsheng.MealSnap.mealReminder"
 
-    private init() {}
-
-    func requestAuthorization() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if let error = error {
-                print("Notification authorization error: \(error)")
-            }
-        }
+    func requestAuthorization(completion: @escaping (Bool) -> Void) {
+        center.requestAuthorization(options: [.alert, .sound]) { granted, _ in DispatchQueue.main.async { completion(granted) } }
     }
 
-    func scheduleMealReminder(mealType: String, time: Date) {
+    func scheduleMealReminder(at hour: Int = 12) {
+        center.removePendingNotificationRequests(withIdentifiers: [mealReminderID])
         let content = UNMutableNotificationContent()
-        content.title = "Time to Log Your \(mealType)"
-        content.body = "Don't forget to track your \(mealType.lowercased()) in MealSnap!"
+        content.title = "🍽️ MealSnap"
+        content.body = "Time to log your meal! Track your nutrition and stay on top of your health goals."
         content.sound = .default
-
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.hour, .minute], from: time)
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-
-        let identifier = "meal_\(mealType.lowercased())"
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: DateComponents(hour: hour, minute: 0), repeats: true)
+        let request = UNNotificationRequest(identifier: mealReminderID, content: content, trigger: trigger)
+        center.add(request) { error in if let e = error { print("Notification error: \(e)") } }
     }
 
-    func scheduleWaterReminder() {
-        let content = UNMutableNotificationContent()
-        content.title = "Stay Hydrated"
-        content.body = "Remember to drink water! Tap to log your water intake."
-        content.sound = .default
+    func cancelAll() { center.removePendingNotificationRequests(withIdentifiers: [mealReminderID]) }
+    var isEnabled: Bool { get { UserDefaults.standard.bool(forKey: "MealSnap.notificationsEnabled") } set { UserDefaults.standard.set(newValue, forKey: "MealSnap.notificationsEnabled") } }
 
-        var dateComponents = DateComponents()
-        dateComponents.hour = 9
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-
-        let request = UNNotificationRequest(identifier: "water_reminder", content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request)
+    func toggle(enabled: Bool, completion: @escaping (Bool) -> Void) {
+        if enabled { requestAuthorization { [weak self] granted in if granted { self?.isEnabled = true; self?.scheduleMealReminder(); completion(true) } else { completion(false) } } }
+        else { isEnabled = false; cancelAll(); completion(true) }
     }
-
-    func scheduleWeeklyReport() {
-        let content = UNMutableNotificationContent()
-        content.title = "Your Weekly Nutrition Report"
-        content.body = "Check out your nutrition summary for this week!"
-        content.sound = .default
-
-        var dateComponents = DateComponents()
-        dateComponents.weekday = 1
-        dateComponents.hour = 10
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-
-        let request = UNNotificationRequest(identifier: "weekly_report", content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request)
-    }
-
-    func cancelNotification(identifier: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
-    }
-
-    func cancelAllNotifications() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-    }
+    func restoreScheduledNotifications() { if isEnabled { scheduleMealReminder() } }
 }
